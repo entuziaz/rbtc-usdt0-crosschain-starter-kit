@@ -1,0 +1,26 @@
+{
+  "name": "rbtc-usdt0-crosschain-starter-kit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/entuziaz/rbtc-usdt0-crosschain-starter-kit.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/entuziaz/rbtc-usdt0-crosschain-starter-kit/issues"
+  },
+  "homepage": "https://github.com/entuziaz/rbtc-usdt0-crosschain-starter-kit#readme",
+  "devDependencies": {
+    "@types/node": "^22.19.3",
+    "hardhat": "^3.1.0",
+    "typescript": "~5.8.0"
+  }
+}
