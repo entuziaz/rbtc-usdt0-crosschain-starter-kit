@@ -16,7 +16,7 @@ contract LendingPool is ReentrancyGuard {
     IERC20 public usdt0;
     IPriceOracle public oracle;
     uint256 public ltvBps;
-    uint256 public USDT0_SCALE;
+    uint256 public immutable USDT0_SCALE;
 
     mapping(address => uint256) public collateralRBTC;
     mapping(address => uint256) public debtUSDT0;
