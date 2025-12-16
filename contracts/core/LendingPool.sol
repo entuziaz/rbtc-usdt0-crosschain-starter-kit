@@ -4,11 +4,14 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { IPriceOracle } from "../interfaces/IPriceOracle.sol";
 
 
+
 contract LendingPool is ReentrancyGuard {
+    using SafeERC20 for IERC20;
 
     IERC20 public usdt0;
     IPriceOracle public oracle;
@@ -20,6 +23,7 @@ contract LendingPool is ReentrancyGuard {
 
     event Deposited(address indexed user, uint256 amount);
     event Withdrawn(address indexed user, uint256 amount);
+    event Borrowed(address indexed user, uint256 amount);
 
     constructor(address _usdt0, IPriceOracle _oracle, uint256 _ltvBps) {
         // Constructor takes: address of USDT0 token, address of Oracle, LTV like 7000=70%
@@ -40,7 +44,7 @@ contract LendingPool is ReentrancyGuard {
     function _isSolvent(uint256 collateralWei, uint256 debtAmount) internal view returns (bool) {
         // debtUSD ≤ collateralUSD × (ltvBps / 10,000)
 
-        uint256 rbtcPrice = oracle.getPrice(address(0)); // adress(0) is the native coin fo rhe chain
+        uint256 rbtcPrice = oracle.getPrice(address(0)); // adress(0) is the native coin of the chain
         uint256 usdtPrice = oracle.getPrice(address(usdt0));
 
         uint256 collateralUsd = (collateralWei * rbtcPrice) / 1e18;
@@ -52,7 +56,7 @@ contract LendingPool is ReentrancyGuard {
 
     }
 
-    function deposit() external payable nonReentrant {
+    function depositRBTC() external payable nonReentrant {
         // require > 0
         // add to collateralRBTC[msg.sender]
         // emit event
@@ -61,7 +65,7 @@ contract LendingPool is ReentrancyGuard {
         emit Deposited(msg.sender, msg.value);
     }
 
-    function withdraw(uint256 amount) external nonReentrant {
+    function withdrawRBTC(uint256 amount) external nonReentrant {
         // require amount > 0
         // require user has enough collateral
         // simulate new collateral = old − amount
@@ -70,7 +74,7 @@ contract LendingPool is ReentrancyGuard {
         // send RBTC back with low-level call
         // emit event
         require(amount> 0, "ZERO_WITHDRAWAL");
-        require(collateralRBTC[msg.sender] >= amount, "INSUFFICIENt COLLATERAL");
+        require(collateralRBTC[msg.sender] >= amount, "INSUFFICIENT COLLATERAL");
         uint256 newCollateral = collateralRBTC[msg.sender] - amount;
         require(_isSolvent(newCollateral, debtUSDT0[msg.sender]), "HF_LT_1"); // Block withdrawal if health factor < 1
         collateralRBTC[msg.sender] -= amount;
@@ -79,6 +83,27 @@ contract LendingPool is ReentrancyGuard {
         emit Withdrawn(msg.sender, amount);
     }
 
-    function borrow() public {}
+    function borrowUSDT0(uint256 amount) external nonReentrant {
+        // require > 0
+        // newDebt = existing + amount
+        // check _isSolvent with current collateral
+        // transfer USDT0 to user
+        // update debt mapping
+        // emit event
+        require(amount > 0, "ZERO_BORROW");
+        uint256 newDebt = debtUSDT0[msg.sender] + amount;
+        require(_isSolvent(collateralRBTC[msg.sender], newDebt), "INSUFFICIENT_COLLATERAL");
+        
+        require(usdt0.balanceOf(address(this)) >= amount, "INSUFFICIENT_POOL_LIQUIDITY");
+        debtUSDT0[msg.sender] = newDebt;
+        usdt0.safeTransfer(msg.sender, amount);
+        emit Borrowed(msg.sender, amount);
+        
+    }
 
+    receive() external payable {
+        revert("DIRECT_PAY_NOT_ALLOWED");
+    }
 }
+
+x
