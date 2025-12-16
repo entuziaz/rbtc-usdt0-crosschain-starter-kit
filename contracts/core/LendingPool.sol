@@ -4,10 +4,11 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { IPriceOracle } from "../interfaces/IPriceOracle.sol";
 
 
-contract LendingPool {
+contract LendingPool is ReentrancyGuard {
 
     IERC20 public usdt0;
     IPriceOracle public oracle;
@@ -51,7 +52,7 @@ contract LendingPool {
 
     }
 
-    function deposit() external payable {
+    function deposit() external payable nonReentrant {
         // require > 0
         // add to collateralRBTC[msg.sender]
         // emit event
@@ -60,7 +61,7 @@ contract LendingPool {
         emit Deposited(msg.sender, msg.value);
     }
 
-    function withdraw(uint256 amount) external {
+    function withdraw(uint256 amount) external nonReentrant {
         // require amount > 0
         // require user has enough collateral
         // simulate new collateral = old − amount
