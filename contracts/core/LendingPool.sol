@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { IPriceOracle } from "../interfaces/IPriceOracle.sol";
 
 
-
 contract LendingPool is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
@@ -31,6 +30,10 @@ contract LendingPool is ReentrancyGuard {
         // Sets those variables
         // Computes USDT0_SCALE 10 ** decimals
         // Adds require checks
+        require(_usdt0 != address(0), "USDT0_0");
+        require(address(_oracle) != address(0), "ORACLE_0");
+        require(_ltvBps > 0 && _ltvBps <= 9500, "LTV_RANGE");
+
         usdt0 = IERC20(_usdt0);
         
         oracle = _oracle;
