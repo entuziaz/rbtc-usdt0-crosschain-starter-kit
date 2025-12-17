@@ -126,5 +126,3 @@ contract LendingPool is ReentrancyGuard {
         revert("DIRECT_PAY_NOT_ALLOWED");
     }
 }
-
-x
