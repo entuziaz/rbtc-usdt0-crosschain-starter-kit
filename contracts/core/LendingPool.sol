@@ -23,6 +23,7 @@ contract LendingPool is ReentrancyGuard {
     event Deposited(address indexed user, uint256 amount);
     event Withdrawn(address indexed user, uint256 amount);
     event Borrowed(address indexed user, uint256 amount);
+    event Repaid(address indexed user, uint256 amount);
 
     constructor(address _usdt0, IPriceOracle _oracle, uint256 _ltvBps) {
         // Constructor takes: address of USDT0 token, address of Oracle, LTV like 7000=70%
@@ -102,6 +103,23 @@ contract LendingPool is ReentrancyGuard {
         usdt0.safeTransfer(msg.sender, amount);
         emit Borrowed(msg.sender, amount);
         
+    }
+
+    function repayUSDT0(uint256 amount) external nonReentrant {
+        // require user has debt
+        // calculate actual pay amount
+        // safeTransferFrom
+        // subtract from debt
+        // emit event
+        uint256 debt = debtUSDT0[msg.sender];
+        require(debt > 0, "NO_DEBT");
+
+        uint256 payAmount = amount > debt ? debt : amount;
+        require(payAmount > 0, "ZERO_REPAY");
+
+        usdt0.safeTransferFrom(msg.sender, address(this), payAmount);
+        debtUSDT0[msg.sender] = debt - payAmount;
+        emit Repaid(msg.sender, payAmount);
     }
 
     receive() external payable {
