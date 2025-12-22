@@ -9,7 +9,7 @@ contract UmbrellaOracleAdapter is IPriceOracle {
     address public immutable asset;
 
     /// @notice Hard safety cap enforced by the protocol
-    uint256 public constant MAX_DELAY = 1 days;
+    uint256 public constant MAX_DELAY = 7 days;
 
     constructor(address _asset, address _reader) {
         require(_asset != address(0), "ASSET_0");
@@ -28,7 +28,7 @@ contract UmbrellaOracleAdapter is IPriceOracle {
         require(_asset == asset, "UNSUPPORTED_ASSET");
 
         (
-            ,               // data (unused)
+            ,
             uint24 heartbeat,
             uint32 timestamp,
             uint128 price
@@ -36,9 +36,8 @@ contract UmbrellaOracleAdapter is IPriceOracle {
 
         uint256 age = block.timestamp - timestamp;
 
-        // Enforce BOTH oracle heartbeat and protocol cap
-        require(age <= heartbeat, "STALE_ORACLE_PRICE");
-        require(age <= MAX_DELAY, "STALE_PROTOCOL_PRICE");
+        require(age <= MAX_DELAY, "STALE_PRICE");
+
 
         uint8 decimals = reader.decimals();
         require(decimals <= 18, "DECIMALS_GT_18");
