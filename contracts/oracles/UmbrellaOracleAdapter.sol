@@ -9,10 +9,11 @@ contract UmbrellaOracleAdapter is IPriceOracle {
     address public immutable asset;
 
     /// @notice Hard safety cap enforced by the protocol
+    /// @notice Long delay for testnet. Use tighter bounds in prod.
     uint256 public constant MAX_DELAY = 7 days;
 
     constructor(address _asset, address _reader) {
-        require(_asset != address(0), "ASSET_0");
+        // address(0) is valid for native asset (RBTC)
         require(_reader != address(0), "READER_0");
 
         asset = _asset;

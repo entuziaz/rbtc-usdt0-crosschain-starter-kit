@@ -49,7 +49,8 @@ contract LendingPool is ReentrancyGuard {
         // debtUSD ≤ collateralUSD × (ltvBps / 10,000)
 
         uint256 rbtcPrice = oracle.getPrice(address(0)); // adress(0) is the native coin of the chain
-        uint256 usdtPrice = oracle.getPrice(address(usdt0));
+        require(rbtcPrice > 0, "INVALID_PRICE");
+        uint256 usdtPrice = 1e18;
 
         uint256 collateralUsd = (collateralWei * rbtcPrice) / 1e18;
         uint256 debtUsd = (debtAmount * usdtPrice) / USDT0_SCALE;
