@@ -30,7 +30,8 @@ describe("LendingPool", function () {
     pool = await LendingPool.deploy(
       usdt0.address,
       oracle.address,
-      LTV
+      LTV,
+      owner.address
     );
 
     // 4. Initial Liquidity: Fund pool so it can lend
@@ -38,7 +39,11 @@ describe("LendingPool", function () {
   });
 
   it("allows borrowing within LTV (0.01 RBTC @ $65k = $650 limit * 0.7 = $455 max)", async function () {
-    await pool.connect(alice).depositRBTC({ value: ethers.utils.parseEther("0.01") });
+    await pool.connect(owner).depositRBTC(
+      alice.address,
+      { value: ethers.utils.parseEther("0.01") }
+    );
+
 
     // Borrow 400 USDT (Safe, under 455 limit)
     await pool.connect(alice).borrowUSDT0(400 * ONE_USDT);
@@ -49,7 +54,11 @@ describe("LendingPool", function () {
   });
 
   it("prevents borrowing above LTV (Borrowing 500 USDT on 455 limit)", async function () {
-    await pool.connect(alice).depositRBTC({ value: ethers.utils.parseEther("0.01") });
+    await pool.connect(owner).depositRBTC(
+      alice.address,
+      { value: ethers.utils.parseEther("0.01") }
+    );
+
 
     await pool.connect(alice)
     .borrowUSDT0(500 * ONE_USDT)
@@ -62,7 +71,11 @@ describe("LendingPool", function () {
 
   it("allows repaying debt", async function () {
     // Setup: Alice deposits and borrows
-    await pool.connect(alice).depositRBTC({ value: ethers.utils.parseEther("0.01") });
+    await pool.connect(owner).depositRBTC(
+      alice.address,
+      { value: ethers.utils.parseEther("0.01") }
+    );
+
     await pool.connect(alice).borrowUSDT0(400 * ONE_USDT);
 
     // Give Alice some USDT to repay (since she spent the borrowed amount or just needs it)
@@ -79,7 +92,11 @@ describe("LendingPool", function () {
   });
 
   it("prevents unsafe withdrawal that would drop Health Factor below 1", async function () {
-    await pool.connect(alice).depositRBTC({ value: ethers.utils.parseEther("0.01") });
+    await pool.connect(owner).depositRBTC(
+      alice.address,
+      { value: ethers.utils.parseEther("0.01") }
+    );
+
     await pool.connect(alice).borrowUSDT0(400 * ONE_USDT);
 
     await pool.connect(alice)

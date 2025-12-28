@@ -16,16 +16,22 @@ contract LendingPool is ReentrancyGuard {
     IPriceOracle public oracle;
     uint256 public ltvBps;
     uint256 public immutable USDT0_SCALE;
+    address public immutable crossChainDepositor;
+
+    modifier onlyDepositor() {
+        require(msg.sender == crossChainDepositor, "NOT_DEPOSITOR");
+        _;
+    }
 
     mapping(address => uint256) public collateralRBTC;
     mapping(address => uint256) public debtUSDT0;
 
-    event Deposited(address indexed user, uint256 amount);
+    event Deposited(address indexed payer, address indexed user, uint256 amount);
     event Withdrawn(address indexed user, uint256 amount);
     event Borrowed(address indexed user, uint256 amount);
     event Repaid(address indexed user, uint256 amount);
 
-    constructor(address _usdt0, IPriceOracle _oracle, uint256 _ltvBps) {
+    constructor(address _usdt0, IPriceOracle _oracle, uint256 _ltvBps, address _crossChainDepositor) {
         // Constructor takes: address of USDT0 token, address of Oracle, LTV like 7000=70%
         // Constructor:
         // Sets those variables
@@ -34,11 +40,13 @@ contract LendingPool is ReentrancyGuard {
         require(_usdt0 != address(0), "USDT0_0");
         require(address(_oracle) != address(0), "ORACLE_0");
         require(_ltvBps > 0 && _ltvBps <= 9500, "LTV_RANGE");
+        require(_crossChainDepositor != address(0), "DEPOSITOR_0");
 
         usdt0 = IERC20(_usdt0);
         
         oracle = _oracle;
         ltvBps = _ltvBps;
+        crossChainDepositor = _crossChainDepositor;
 
         // convert USDT0 amounts to 18-decimals USD math
         uint8 decimals = IERC20Metadata(_usdt0).decimals();
@@ -61,13 +69,15 @@ contract LendingPool is ReentrancyGuard {
 
     }
 
-    function depositRBTC() external payable nonReentrant {
+    function depositRBTC(address onBehalfOf) external payable nonReentrant onlyDepositor {
         // require > 0
         // add to collateralRBTC[msg.sender]
         // emit event
         require(msg.value > 0, "ZERO_DEPOSIT");
-        collateralRBTC[msg.sender] += msg.value;
-        emit Deposited(msg.sender, msg.value);
+        require(onBehalfOf != address(0), "USER_0");
+
+        collateralRBTC[onBehalfOf] += msg.value;
+        emit Deposited(msg.sender, onBehalfOf, msg.value);
     }
 
     function withdrawRBTC(uint256 amount) external nonReentrant {
