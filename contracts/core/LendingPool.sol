@@ -116,6 +116,23 @@ contract LendingPool is ReentrancyGuard {
         
     }
 
+    function borrowUSDT0For(address user, uint256 amount)
+        external
+        nonReentrant
+        onlyDepositor
+    {
+        require(amount > 0, "ZERO_BORROW");
+
+        uint256 newDebt = debtUSDT0[user] + amount;
+        require(_isSolvent(collateralRBTC[user], newDebt), "INSUFFICIENT_COLLATERAL");
+
+        require(usdt0.balanceOf(address(this)) >= amount, "POOL_LIQUIDITY");
+
+        debtUSDT0[user] = newDebt;
+        usdt0.safeTransfer(msg.sender, amount); // to LZReceiver
+    }
+
+
     function repayUSDT0(uint256 amount) external nonReentrant {
         // require user has debt
         // calculate actual pay amount

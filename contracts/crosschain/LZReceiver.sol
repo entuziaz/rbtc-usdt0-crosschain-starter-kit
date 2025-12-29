@@ -5,6 +5,7 @@ pragma solidity ^0.8.19;
 import "../interfaces/ILZReceiver.sol";
 import "../interfaces/ILZEndpoint.sol";
 import "../core/LendingPool.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract LZReceiver is ILZReceiver {
     ILZEndpoint public immutable endpoint;
@@ -14,6 +15,9 @@ contract LZReceiver is ILZReceiver {
     mapping(uint16 => bytes) public trustedRemote;
     mapping(bytes32 => bool) public processedMessages;
     address public owner;
+
+    uint8 internal constant MSG_DEPOSIT = 1;
+    uint8 internal constant MSG_BORROW = 2;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "NOT_OWNER");
@@ -25,9 +29,10 @@ contract LZReceiver is ILZReceiver {
         uint256 amount,
         uint16 srcChainId
     );
-    event TrustedRemoteSet(
-        uint16 indexed chainId,
-        bytes remote
+    event BorrowExecuted(
+        address indexed user,
+        uint256 amount, 
+        uint16 srcChainId
     );
 
 
@@ -55,7 +60,7 @@ contract LZReceiver is ILZReceiver {
 
         trustedRemote[_chainId] = _remote;
 
-        emit TrustedRemoteSet(_chainId, _remote);
+        // emit TrustedRemoteSet(_chainId, _remote);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -76,21 +81,34 @@ contract LZReceiver is ILZReceiver {
             "UNTRUSTED_SRC"
         );
 
-         (address recipient, uint256 amount) =
-            abi.decode(_payload, (address, uint256));
-
-        require(amount > 0, "ZERO_AMOUNT");
-        require(recipient != address(0), "RECIPIENT_0");
-
         bytes32 key = keccak256(
             abi.encodePacked(_srcChainId, _srcAddress, _nonce)
         );
         require(!processedMessages[key], "REPLAY");
         processedMessages[key] = true;
 
-        lendingPool.depositRBTC{ value: amount }(recipient);
+        (uint8 msgType, address user, uint256 amount) =
+            abi.decode(_payload, (uint8, address, uint256));
 
-        emit RBTCReceived(recipient, amount, _srcChainId);
+        require(user != address(0), "USER_0");
+        require(amount > 0, "ZERO_AMOUNT");
+
+        if (msgType == MSG_DEPOSIT) {
+            lendingPool.depositRBTC{value: amount}(user);
+            emit RBTCReceived(user, amount, _srcChainId);
+
+        } else if (msgType == MSG_BORROW) {
+            lendingPool.borrowUSDT0For(user, amount);
+
+            // bridge back (mock)
+            IERC20 usdt = lendingPool.usdt0();
+            usdt.transfer(user, amount);
+
+            emit BorrowExecuted(user, amount, _srcChainId);
+
+        } else {
+            revert("INVALID_MSG");
+        }
     }
 
 
