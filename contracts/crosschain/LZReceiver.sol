@@ -98,27 +98,22 @@ contract LZReceiver is ILZReceiver {
             lendingPool.depositRBTC{value: amount}(user);
             emit RBTCReceived(user, amount, _srcChainId);
 
-        } else if (msgType == MSG_BORROW) {
+       } else if (msgType == MSG_BORROW) {
             lendingPool.borrowUSDT0For(user, amount);
-
-            // bridge back (mock)
-            IERC20 usdt = lendingPool.usdt0();
-            usdt.transfer(user, amount);
 
             emit BorrowExecuted(user, amount, _srcChainId);
 
         } else if (msgType == MSG_REPAY) {
-            // Receiver already holds bridged USDT
-            IERC20 usdt = lendingPool.usdt0();
+            lendingPool.repayUSDT0For(user, amount);
 
-            require(
-                usdt.balanceOf(address(this)) >= amount,
-                "INSUFFICIENT_BRIDGED_FUNDS"
-            );
+            // NOTE: Pure state transitions without bridge assumptions thereby treating REPAY as accounting instruction
+            // Receiver already holds bridged USDT
+            // IERC20 usdt = lendingPool.usdt0();
 
             // approve pool
-            usdt.approve(address(lendingPool), amount);
-            lendingPool.repayUSDT0For(user, amount);
+            // usdt.approve(address(lendingPool), 0);
+            // usdt.approve(address(lendingPool), amount);
+            // lendingPool.repayUSDT0For(user, amount);
 
         } else {
             revert("INVALID_MSG");

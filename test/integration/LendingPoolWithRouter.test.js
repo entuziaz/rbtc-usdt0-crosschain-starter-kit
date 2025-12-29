@@ -42,7 +42,8 @@ describe("LendingPool + OracleRouter (integration)", function () {
     pool = await LendingPool.deploy(
       usdt0.address,
       router.address,
-      LTV
+      LTV,
+      owner.address
     );
 
     // Fund pool
@@ -50,9 +51,11 @@ describe("LendingPool + OracleRouter (integration)", function () {
   });
 
   it("allows borrowing with real oracle routing", async function () {
-    await pool.connect(alice).depositRBTC({
-      value: ethers.utils.parseEther("0.01"),
-    });
+    await pool.connect(owner).depositRBTC(
+      alice.address,
+      { value: ethers.utils.parseEther("0.01") }
+    );
+
 
     await pool.connect(alice).borrowUSDT0(400 * ONE_USDT);
 

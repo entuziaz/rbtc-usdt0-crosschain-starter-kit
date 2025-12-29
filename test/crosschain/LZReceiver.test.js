@@ -65,10 +65,13 @@ describe("LZReceiver — cross-chain deposit", function () {
 
   const amount = ethers.utils.parseEther("0.01");
 
+  const MSG_DEPOSIT = 1;
+
   const payload = ethers.utils.defaultAbiCoder.encode(
-    ["address", "uint256"],
-    [alice.address, amount]
+    ["uint8", "address", "uint256"],
+    [MSG_DEPOSIT, alice.address, amount]
   );
+
 
   // 🔑 simulate LayerZero delivering ETH
     // fund receiver
@@ -105,10 +108,14 @@ describe("LZReceiver — cross-chain deposit", function () {
   await receiver.setTrustedRemote(srcChainId, trustedSender);
 
   const amount = ethers.utils.parseEther("0.01");
+  
+  const MSG_DEPOSIT = 1;
+
   const payload = ethers.utils.defaultAbiCoder.encode(
-    ["address", "uint256"],
-    [alice.address, amount]
+    ["uint8", "address", "uint256"],
+    [MSG_DEPOSIT, alice.address, amount]
   );
+
 
   // fund receiver
   await owner.sendTransaction({

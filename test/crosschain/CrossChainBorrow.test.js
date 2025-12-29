@@ -68,10 +68,13 @@ describe("Cross-chain borrow — collateral enables lending", function () {
     const collateralAmount = ethers.utils.parseEther("0.01"); // ~$650
     const borrowAmount = 400 * ONE_USDT; // under 70% LTV
 
+    const MSG_DEPOSIT = 1;
+
     const payload = ethers.utils.defaultAbiCoder.encode(
-      ["address", "uint256"],
-      [alice.address, collateralAmount]
+      ["uint8", "address", "uint256"],
+      [MSG_DEPOSIT, alice.address, collateralAmount]
     );
+
 
     // ---- Simulate LayerZero ETH delivery ----
     await owner.sendTransaction({

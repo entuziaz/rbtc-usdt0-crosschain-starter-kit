@@ -7,7 +7,7 @@ contract LZBorrowSender {
     ILZEndpoint public immutable endpoint;
 
     uint16 public immutable dstChainId;
-    bytes public immutable dstReceiver; // encoded receiver address
+    bytes public dstReceiver; // encoded receiver address
     address public immutable usdt0;
 
     uint8 internal constant MSG_BORROW = 2;
