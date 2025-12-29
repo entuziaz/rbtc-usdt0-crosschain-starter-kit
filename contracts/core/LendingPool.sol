@@ -150,6 +150,24 @@ contract LendingPool is ReentrancyGuard {
         emit Repaid(msg.sender, payAmount);
     }
 
+    function repayUSDT0For(address user, uint256 amount)
+        external
+        nonReentrant
+        onlyDepositor
+    {
+        uint256 debt = debtUSDT0[user];
+        require(debt > 0, "NO_DEBT");
+
+        uint256 payAmount = amount > debt ? debt : amount;
+        require(payAmount > 0, "ZERO_REPAY");
+
+        usdt0.safeTransferFrom(msg.sender, address(this), payAmount);
+        debtUSDT0[user] = debt - payAmount;
+
+        emit Repaid(user, payAmount);
+    }
+
+
     receive() external payable {
         revert("DIRECT_PAY_NOT_ALLOWED");
     }

@@ -19,6 +19,6 @@ contract MockLZEndpoint {
             nonce,
             payload
         );
-}
+    }
 
 }

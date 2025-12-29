@@ -18,6 +18,7 @@ contract LZReceiver is ILZReceiver {
 
     uint8 internal constant MSG_DEPOSIT = 1;
     uint8 internal constant MSG_BORROW = 2;
+    uint8 internal constant MSG_REPAY = 3;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "NOT_OWNER");
@@ -105,6 +106,19 @@ contract LZReceiver is ILZReceiver {
             usdt.transfer(user, amount);
 
             emit BorrowExecuted(user, amount, _srcChainId);
+
+        } else if (msgType == MSG_REPAY) {
+            // Receiver already holds bridged USDT
+            IERC20 usdt = lendingPool.usdt0();
+
+            require(
+                usdt.balanceOf(address(this)) >= amount,
+                "INSUFFICIENT_BRIDGED_FUNDS"
+            );
+
+            // approve pool
+            usdt.approve(address(lendingPool), amount);
+            lendingPool.repayUSDT0For(user, amount);
 
         } else {
             revert("INVALID_MSG");
