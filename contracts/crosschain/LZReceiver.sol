@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract LZReceiver is ILZReceiver {
     ILZEndpoint public immutable endpoint;
-    LendingPool public immutable lendingPool;
+    LendingPool public lendingPool;
 
     // source chainId => trusted sender
     mapping(uint16 => bytes) public trustedRemote;
@@ -38,15 +38,20 @@ contract LZReceiver is ILZReceiver {
 
 
     constructor(
-        address _endpoint,
-        address _lendingPool
+        address _endpoint
+        // address _lendingPool
     ) {
         require(_endpoint != address(0), "ENDPOINT_0");
-        require(_lendingPool != address(0), "POOL_0");
+        // require(_lendingPool != address(0), "POOL_0");
 
         endpoint = ILZEndpoint(_endpoint);
-        lendingPool = LendingPool(payable(_lendingPool));
+        // lendingPool = LendingPool(payable(_lendingPool));
         owner = msg.sender;
+    }
+
+    function setLendingPool(address _pool) external onlyOwner {
+        require(address(lendingPool) == address(0), "POOL_ALREADY_SET");
+        lendingPool = LendingPool(payable(_pool));
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -119,7 +124,6 @@ contract LZReceiver is ILZReceiver {
             revert("INVALID_MSG");
         }
     }
-
 
     receive() external payable {}
 }

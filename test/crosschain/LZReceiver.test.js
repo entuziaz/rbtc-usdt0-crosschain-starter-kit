@@ -26,30 +26,19 @@ describe("LZReceiver — cross-chain deposit", function () {
     const LendingPool = await ethers.getContractFactory("LendingPool");
     const LZReceiver = await ethers.getContractFactory("LZReceiver");
 
-    // ---- Predict receiver address ----
-    const nonce = await owner.getTransactionCount();
-
-    const predictedReceiverAddress = ethers.utils.getContractAddress({
-      from: owner.address,
-      nonce: nonce + 1,
-    });
-
+    // ---- Deploy receiver ----
+    receiver = await LZReceiver.deploy(endpoint.address);
+    
     // ---- Deploy pool with correct depositor ----
     pool = await LendingPool.deploy(
       usdt0.address,
       oracle.address,
       LTV,
-      predictedReceiverAddress
+      receiver.address
     );
 
-    // ---- Deploy receiver ----
-    receiver = await LZReceiver.deploy(
-      endpoint.address,
-      pool.address
-    );
-
-    // sanity check
-    expect(receiver.address).to.equal(predictedReceiverAddress);
+    await receiver.setLendingPool(pool.address);
+    
   });
 
   it("credits collateral when a valid LZ message is received", async function () {

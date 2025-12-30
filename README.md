@@ -224,7 +224,7 @@ pool.borrowUSDT0(500 * 1e6);
 
 The protocol enforces a strict **Loan-to-Value (LTV)** using Base Points (BPS) to maintain precision without floating-point math. A position is **solvent** if the USD value of the debt does not exceed the USD value of the collateral multiplied by the protocol LTV:
 
-```
+```text
 debtUSD ≤ collateralUSD × (LTV / 10,000)
 ```
 
@@ -238,6 +238,15 @@ The solvency logic is implemented in the `LendingPool`s internal function `_isSo
 
 ```solidity
 function _isSolvent(uint256 collateralWei, uint256 debtAmount)
+```
+
+### One-Time Receiver Wiring
+
+The `LZReceiver` does not hardcode the `LendingPool` address at construction time.
+Instead, it is linked via a **one-time administrative call**:
+
+```solidity
+receiver.setLendingPool(lendingPool);
 ```
 
 
@@ -272,16 +281,61 @@ function _isSolvent(uint256 collateralWei, uint256 debtAmount)
 ### Installation & Compilation
 
 ```bash
-git clone https://github.com/entuziaz/rbtc-usdt0-crosschain-starter-kit 
-npm install 
-npx hardhat compile 
+git clone https://github.com/entuziaz/rbtc-usdt0-crosschain-starter-kit
+cd rbtc-usdt0-crosschain-starter-kit
+npm install
+npx hardhat compile
 ```
+
+Create an environment variables file called `.env` in the root of the project and add the following variables.
+
+```bash
+# Private Key could be obtained from your wallet
+PRIVATE_KEY=0xYOUR_TESTNET_PRIVATE_KEY
+
+# Rootstock Testnet RPC URL
+ROOTSTOCK_RPC_URL=https://public-node.testnet.rsk.co
+
+# USDT0-compatible test token address (available on Rootstock Explorer)
+USDT0_ADDRESS=0x05f25f62687478985c230e8db077754fb41f4970
+
+# Umbrella Network RBTC/USD reader (Rootstock Testnet)
+UMBRELLA_RBTC_READER=0x92010e763d476a732021191562134c488ca92a1f
+
+# LayerZero Endpoint address for Rootstock Testnet
+LZ_ENDPOINT=0x5659e38a754c96d20fa4f08acd9a6cb5982149c6
+
+# Loan-to-Value ratio (basis points)
+LTV_BPS=7000
+
+```
+
+> ⚠️ Ensure that `rootstock_testnet` is configured in `hardhat.config.js` and uses `ROOTSTOCK_RPC_URL` and your deployer private key.
 
 
 2. **Deploy the protocol:**
 ```bash
-npx hardhat run scripts/deploy.js --network rootstock
+npx hardhat run scripts/deploy.js --network rootstock_testnet
 ```
+
+When deployment succeeds, you should see output similar to the following:
+
+```bash
+Deploying with: 0x...
+
+OracleRouter:        0x51a17751e25E557Adfd6909c107ca8BdFF8733a5
+RBTC Oracle Adapter: 0x01A239C498Eb8E96aab3049c0Cd3D7eC1d818617
+RBTC oracle registered
+
+LZReceiver:          0x0f24a994f148fbE79132BC29698eC15ddaBF4DCD
+LendingPool:         0xDb78D92d465F14533eE9eDBe7460180Fd501dbf4
+Receiver linked to LendingPool
+
+Deployment complete ✅
+```
+
+> Note: Contract addresses will differ per deployment and network.
+> This output confirms that the oracle, cross-chain receiver, and lending pool were deployed and wired correctly.
 
 ### Oracle Configuration
 
