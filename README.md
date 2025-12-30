@@ -249,6 +249,35 @@ Instead, it is linked via a **one-time administrative call**:
 receiver.setLendingPool(lendingPool);
 ```
 
+## Frontend (Minimal dApp)
+
+This repository includes a **minimal React + Vite frontend UI** that demonstrates direct interaction with the deployed smart contracts on the **Rootstock Testnet**. 
+
+The UI allows: 
+- Wallet connection via MetaMask
+- Reading RBTC price from Umbrella oracle
+- Viewing user collateral and debt
+- Borrowing USDT0 against RBTC collateral
+
+The frontend is intentionally lightweight and educational. Its purpose is to prove end-to-end usability of the protocol rather than provide a production UI.
+
+### Frontend Folder Structure
+
+```
+frontend/
+├─ index.html
+├─ vite.config.js
+└─ src/
+   ├─ main.jsx
+   ├─ App.jsx
+   └─ contracts.js
+```
+
+---
+
+### UI Overview
+
+
 
 ### Security Considerations
 
@@ -278,7 +307,7 @@ receiver.setLendingPool(lendingPool);
 * **Framework**: Hardhat
 * **Dependencies**: OpenZeppelin (SafeERC20, ReentrancyGuard)
 
-### Installation & Compilation
+### 1. Installation & Compilation
 
 ```bash
 git clone https://github.com/entuziaz/rbtc-usdt0-crosschain-starter-kit
@@ -313,7 +342,8 @@ LTV_BPS=7000
 > ⚠️ Ensure that `rootstock_testnet` is configured in `hardhat.config.js` and uses `ROOTSTOCK_RPC_URL` and your deployer private key.
 
 
-2. **Deploy the protocol:**
+### 2. Deploy the protocol
+
 ```bash
 npx hardhat run scripts/deploy.js --network rootstock_testnet
 ```
@@ -336,6 +366,42 @@ Deployment complete ✅
 
 > Note: Contract addresses will differ per deployment and network.
 > This output confirms that the oracle, cross-chain receiver, and lending pool were deployed and wired correctly.
+
+
+### 3. Run the Frontend UI
+
+1. Run the frontend server:
+
+```bash
+cd frontend && npm run dev
+```
+
+2. Open browser
+
+3. Connect MetaMask
+
+4. See real price
+
+5. Click Borrow
+
+6. Transaction pops MetaMask
+
+✅ Full-stack confirmed
+
+
+### Oracle Availability on Testnet
+
+Umbrella Network price feeds are **limited on the Rootstock testnet**.
+Most feeds, including RBTC/USD, are **only available on Rootstock mainnet**.
+
+As a result:
+
+- `getPrice()` may revert on testnet
+- This is expected and documented behavior
+- All oracle safety checks remain enforced
+
+The protocol and UI are designed to handle oracle unavailability gracefully. For live price data, deploy the same contracts to Rootstock mainnet.
+
 
 ### Oracle Configuration
 
