@@ -1,3 +1,6 @@
+// NOTE: ABIs are imported from Hardhat artifacts.
+// Run `npx hardhat compile` before starting the frontend.
+
 import LendingPoolArtifact from "../../artifacts/contracts/core/LendingPool.sol/LendingPool.json";
 import OracleRouterArtifact from "../../artifacts/contracts/oracles/OracleRouter.sol/OracleRouter.json";
 

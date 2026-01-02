@@ -249,7 +249,7 @@ Instead, it is linked via a **one-time administrative call**:
 receiver.setLendingPool(lendingPool);
 ```
 
-## Frontend (Minimal dApp)
+### Frontend (Minimal dApp)
 
 This repository includes a **minimal React + Vite frontend UI** that demonstrates direct interaction with the deployed smart contracts on the **Rootstock Testnet**. 
 
@@ -261,7 +261,7 @@ The UI allows:
 
 The frontend is intentionally lightweight and educational. Its purpose is to prove end-to-end usability of the protocol rather than provide a production UI.
 
-### Frontend Folder Structure
+#### Frontend Folder Structure
 
 ```
 frontend/
@@ -273,9 +273,19 @@ frontend/
    └─ contracts.js
 ```
 
----
 
-### UI Overview
+#### ABI Generation (Important)
+
+This repository does **not** commit compiled contract artifacts. The frontend imports ABIs directly from Hardhat’s `artifacts/` directory: `artifacts/contracts/…` Before running the frontend, you **must compile the contracts** in the root of the repo:
+
+```bash
+npx hardhat compile
+```
+
+This will generate the required ABI files used by the React frontend.
+> This approach ensures the frontend ABI always matches the deployed contracts and avoids ABI drift.
+
+---
 
 
 
@@ -370,29 +380,30 @@ Deployment complete ✅
 
 ### 3. Run the Frontend UI
 
-1. Run the frontend server:
+1. Update `contracts.js` with the deployed addresses from the terminal output of the `npx hardhat run scripts/deploy.js` command.
+
+2. Run the frontend server:
 
 ```bash
 cd frontend && npm run dev
 ```
 
-2. Open browser
+3. Open browser
 
-3. Connect MetaMask
+4. Connect MetaMask
 
-4. See real price
+5. See real price
 
-5. Click Borrow
+6. Click Borrow
 
-6. Transaction pops MetaMask
+7. Transaction pops MetaMask
 
 ✅ Full-stack confirmed
 
 
 ### Oracle Availability on Testnet
 
-Umbrella Network price feeds are **limited on the Rootstock testnet**.
-Most feeds, including RBTC/USD, are **only available on Rootstock mainnet**.
+Umbrella Network price feeds are **limited on the Rootstock testnet**. Most feeds, including RBTC/USD, are **only available on Rootstock mainnet**.
 
 As a result:
 
