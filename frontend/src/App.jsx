@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BrowserProvider, Contract, formatEther } from "ethers";
+import { ethers } from "ethers";
 import { CONTRACTS, ABIS } from "./contracts";
 
 function App() {
@@ -17,14 +17,16 @@ function App() {
       return;
     }
 
-    const provider = new BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+
+    const signer = provider.getSigner();
     const account = await signer.getAddress();
 
     setAccount(account);
 
-    setPool(new Contract(CONTRACTS.lendingPool, ABIS.lendingPool, signer));
-    setOracle(new Contract(CONTRACTS.oracleRouter, ABIS.oracleRouter, signer));
+    setPool(new ethers.Contract(CONTRACTS.lendingPool, ABIS.lendingPool, signer));
+    setOracle(new ethers.Contract(CONTRACTS.oracleRouter, ABIS.oracleRouter, signer));
   }
 
   async function refresh() {
@@ -34,7 +36,7 @@ function App() {
       const price = await oracle.getPrice(
         "0x0000000000000000000000000000000000000000"
       );
-      setPrice(formatEther(price));
+      setPrice(ethers.utils.formatEther(price));
     } catch (err) {
       console.warn("Oracle unavailable on testnet");
       setPrice(" Unavailable on testnet");
@@ -43,7 +45,7 @@ function App() {
     const collateral = await pool.collateralRBTC(account);
     const debt = await pool.debtUSDT0(account);
 
-    setCollateral(formatEther(collateral));
+    setCollateral(ethers.utils.formatEther(collateral));
     setDebt((Number(debt) / 1e6).toString());
   }
 
