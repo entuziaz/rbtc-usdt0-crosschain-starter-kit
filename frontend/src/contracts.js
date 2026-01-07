@@ -13,3 +13,14 @@ export const ABIS = {
   lendingPool: LendingPoolArtifact.abi,
   oracleRouter: OracleRouterArtifact.abi,
 };
+
+export const ROOTSTOCK_TESTNET = {
+  chainId: "0x1f", // 31
+  chainName: "Rootstock Testnet",
+  rpcUrls: ["https://public-node.testnet.rsk.co"],
+  nativeCurrency: {
+    name: "tRBTC",
+    symbol: "tRBTC",
+    decimals: 18,
+  },
+};

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import { CONTRACTS, ABIS } from "./contracts";
+import { CONTRACTS, ABIS, ROOTSTOCK_TESTNET } from "./contracts";
 
 function App() {
   const [account, setAccount] = useState(null);
@@ -17,11 +17,35 @@ function App() {
       return;
     }
 
+    // Metamask popup
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+
+    if (!accounts || accounts.length === 0) {
+      alert("Wallet connection rejected");
+      return;
+    }
+
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
+    const network = await provider.getNetwork();
+
+    // Enforceing Rootstock Testnet
+    if (network.chainId !== 31) {
+      try {
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [ROOTSTOCK_TESTNET],
+        });
+        return; // user must reconnect after switching
+      } catch (err) {
+        alert("Please switch to Rootstock Testnet");
+        return;
+      }
+    }
 
     const signer = provider.getSigner();
-    const account = await signer.getAddress();
+    const account = accounts[0];
 
     setAccount(account);
 
