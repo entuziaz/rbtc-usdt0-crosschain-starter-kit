@@ -39,13 +39,9 @@ contract LZReceiver is ILZReceiver {
 
     constructor(
         address _endpoint
-        // address _lendingPool
     ) {
         require(_endpoint != address(0), "ENDPOINT_0");
-        // require(_lendingPool != address(0), "POOL_0");
-
         endpoint = ILZEndpoint(_endpoint);
-        // lendingPool = LendingPool(payable(_lendingPool));
         owner = msg.sender;
     }
 
@@ -65,8 +61,6 @@ contract LZReceiver is ILZReceiver {
         require(_remote.length != 0, "REMOTE_EMPTY");
 
         trustedRemote[_chainId] = _remote;
-
-        // emit TrustedRemoteSet(_chainId, _remote);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -113,12 +107,6 @@ contract LZReceiver is ILZReceiver {
 
             // NOTE: Pure state transitions without bridge assumptions thereby treating REPAY as accounting instruction
             // Receiver already holds bridged USDT
-            // IERC20 usdt = lendingPool.usdt0();
-
-            // approve pool
-            // usdt.approve(address(lendingPool), 0);
-            // usdt.approve(address(lendingPool), amount);
-            // lendingPool.repayUSDT0For(user, amount);
 
         } else {
             revert("INVALID_MSG");

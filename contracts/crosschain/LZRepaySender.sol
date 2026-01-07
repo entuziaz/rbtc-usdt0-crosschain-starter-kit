@@ -36,12 +36,7 @@ contract LZRepaySender {
 
     function repayUSDT(uint256 amount) external {
         require(amount > 0, "ZERO_AMOUNT");
-
         // NOTE: Token delivery to be handled by application layer
-        // pull funds from user
-        // usdt0.safeTransferFrom(msg.sender, bridge, amount);
-
-
         bytes memory payload = abi.encode(
             MSG_REPAY,
             msg.sender,
