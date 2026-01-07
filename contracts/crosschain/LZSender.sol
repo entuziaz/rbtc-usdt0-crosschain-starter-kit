@@ -53,7 +53,10 @@ contract LZSender {
         require(_recipient != address(0), "RECIPIENT_0");
         require(trustedRemote[_dstChainId].length != 0, "UNTRUSTED_DST");
 
+        uint8 MSG_DEPOSIT = 1;
+
         bytes memory payload = abi.encode(
+            MSG_DEPOSIT,
             _recipient,
             msg.value
         );
