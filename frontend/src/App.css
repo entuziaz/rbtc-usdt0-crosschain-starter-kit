@@ -1,3 +1,21 @@
+:root {
+  --rsk-orange: #FF9100;
+  --rsk-black: #000000;
+  --rsk-white: #FAF9F5;
+  --rsk-green: #79C600;
+  --rsk-pink: #FF71E1;
+  --rsk-purple: #9E76FF;
+
+  --card-bg: #ffffff;
+  --border: #e5e7eb;
+  --text-main: #111827;
+  --text-muted: #6b7280;
+
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Inter, sans-serif;
+}
+
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +57,86 @@
 
 .read-the-docs {
   color: #888;
+}
+
+
+.app {
+  max-width: 720px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: var(--rsk-white);
+  color: var(--text-main);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.badge {
+  background: var(--rsk-orange);
+  color: black;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.card h3 {
+  margin: 0 0 0.75rem 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.grid span {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+}
+
+.primary {
+  background: var(--rsk-orange);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary:hover {
+  opacity: 0.9;
+}
+
+.mono {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+.status {
+  margin-top: 1rem;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  font-weight: 600;
 }

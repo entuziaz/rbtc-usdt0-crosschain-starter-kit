@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { CONTRACTS, ABIS, ROOTSTOCK_TESTNET } from "./contracts";
+import "./app.css";
 
 function App() {
   const [account, setAccount] = useState(null);
@@ -10,6 +11,7 @@ function App() {
   const [price, setPrice] = useState("—");
   const [collateral, setCollateral] = useState("—");
   const [debt, setDebt] = useState("—");
+  const [status, setStatus] = useState("");
 
   async function connect() {
     if (!window.ethereum) {
@@ -48,9 +50,10 @@ function App() {
     const account = accounts[0];
 
     setAccount(account);
-
     setPool(new ethers.Contract(CONTRACTS.lendingPool, ABIS.lendingPool, signer));
-    setOracle(new ethers.Contract(CONTRACTS.oracleRouter, ABIS.oracleRouter, signer));
+    setOracle(
+      new ethers.Contract(CONTRACTS.oracleRouter, ABIS.oracleRouter, signer)
+    );
   }
 
   async function refresh() {
@@ -73,11 +76,17 @@ function App() {
     setDebt((Number(debt) / 1e6).toString());
   }
 
-
   async function borrow() {
-    const tx = await pool.borrowUSDT0(100 * 1e6);
-    await tx.wait();
-    await refresh();
+    try {
+      setStatus("⏳ Sending transaction...");
+      const tx = await pool.borrowUSDT0(100 * 1e6);
+      await tx.wait();
+      setStatus("✅ Borrow successful");
+      await refresh();
+    } catch (err) {
+      setStatus("❌ Transaction failed");
+      console.error(err);
+    }
   }
 
   useEffect(() => {
@@ -85,21 +94,49 @@ function App() {
   }, [pool]);
 
   return (
-    <div style={{ padding: 32 }}>
-      <h2>RBTC–USDT0 Lending (Rootstock Testnet)</h2>
+    <div className="app">
+      <header className="header">
+        <h1>RBTC–USDT0 Lending</h1>
+        <span className="badge">Rootstock Testnet</span>
+      </header>
 
       {!account ? (
-        <button onClick={connect}>Connect Wallet</button>
+        <button className="primary" onClick={connect}>
+          Connect Wallet
+        </button>
       ) : (
         <>
-          <p><b>Account:</b> {account}</p>
-          <p><b>RBTC Price:</b> ${price}</p>
-          <p><b>Collateral:</b> {collateral} RBTC</p>
-          <p><b>Debt:</b> {debt} USDT0</p>
+          <div className="card">
+            <h3>Wallet</h3>
+            <p className="mono">{account}</p>
+          </div>
 
-          <button onClick={borrow}>
-            Borrow 100 USDT0
-          </button>
+          <div className="card">
+            <h3>Oracle Price</h3>
+            <p>RBTC / USD: <b>${price}</b></p>
+          </div>
+
+          <div className="card">
+            <h3>Your Position</h3>
+            <div className="grid">
+              <div>
+                <span>Collateral</span>
+                <b>{collateral} RBTC</b>
+              </div>
+              <div>
+                <span>Debt</span>
+                <b>{debt} USDT0</b>
+              </div>
+            </div>
+          </div>
+
+          <div className="card actions">
+            <button className="primary" onClick={borrow}>
+              Borrow 100 USDT0
+            </button>
+          </div>
+
+          {status && <div className="status">{status}</div>}
         </>
       )}
     </div>

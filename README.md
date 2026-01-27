@@ -319,11 +319,12 @@ This will generate the required ABI files used by the React frontend.
 
 ### 1. Installation & Compilation
 
+Use the following commands to download the code and install dependencies:
+
 ```bash
 git clone https://github.com/entuziaz/rbtc-usdt0-crosschain-starter-kit
 cd rbtc-usdt0-crosschain-starter-kit
 npm install
-npx hardhat compile
 ```
 
 Create an environment variables file called `.env` in the root of the project and add the following variables.
@@ -349,16 +350,23 @@ LTV_BPS=7000
 
 ```
 
+Then, run the `compile` command in the terminal:
+
+```
+npx hardhat compile
+```
+
 > ⚠️ Ensure that `rootstock_testnet` is configured in `hardhat.config.js` and uses `ROOTSTOCK_RPC_URL` and your deployer private key.
 
 
 ### 2. Deploy the protocol
 
+Use the following command to deploy the contracts from the root of the project:
+
 ```bash
 npx hardhat run scripts/deploy.js --network rootstock_testnet
 ```
-
-When deployment succeeds, you should see output similar to the following:
+The above command runs the `deploy.js` script that is inside the `scripts` directory of the project When deployment succeeds, you should see an output similar to the following:
 
 ```bash
 Deploying with: 0x...
@@ -380,12 +388,14 @@ Deployment complete ✅
 
 ### 3. Run the Frontend UI
 
-1. Update `contracts.js` with the deployed addresses from the terminal output of the `npx hardhat run scripts/deploy.js` command.
+1. Update `frontend/src/contracts.js` file with the deployed addresses from the terminal output of the contracts deployment.
 
-2. Run the frontend server:
+2. Install frontend dependencies and run the frontend server:
 
 ```bash
-cd frontend && npm run dev
+cd frontend
+npm install
+npm run dev
 ```
 
 3. Open browser
