@@ -388,7 +388,12 @@ Deployment complete ✅
 
 ### 3. Run the Frontend UI
 
-1. Update `frontend/src/contracts.js` file with the deployed addresses from the terminal output of the contracts deployment.
+1. Create a `.env` file in the root of the `frontend` directory. Add the following addresses inside  `frontend/.env` file. You can get them from the deployed addresses from the terminal output of the contracts deployment.
+
+```text
+VITE_ORACLE_ROUTER="Your Deployed Oracle Router Address"
+VITE_LENDING_POOL="Your Deployed Lending Pool Address"
+```
 
 2. Install frontend dependencies and run the frontend server:
 
@@ -421,7 +426,27 @@ As a result:
 - This is expected and documented behavior
 - All oracle safety checks remain enforced
 
-The protocol and UI are designed to handle oracle unavailability gracefully. For live price data, deploy the same contracts to Rootstock mainnet.
+The protocol and UI are designed to handle oracle unavailability gracefully. For live price data, you have to deploy the same contracts to Rootstock mainnet.
+
+To enable full end-to-end testing on testnet, this starter kit supports
+two oracle modes:
+
+### Testnet Mode (Default)
+- Uses a `FixedPriceOracle` returning a constant RBTC/USD price
+- Allows borrowing, repayment, and solvency checks to work end-to-end
+- Ensures reviewers can test the full lending flow on Rootstock testnet
+
+### Mainnet Mode (Production Reference)
+- Uses the `UmbrellaOracleAdapter` for live RBTC/USD pricing
+- Demonstrates real oracle integration
+- Requires deployment to Rootstock mainnet
+
+Switching between modes is controlled via the deployment script
+environment variable:
+
+```bash
+USE_FIXED_ORACLE=true
+```
 
 
 ### Oracle Configuration

@@ -79,7 +79,7 @@ function App() {
   async function borrow() {
     try {
       setStatus("⏳ Sending transaction...");
-      const tx = await pool.borrowUSDT0(100 * 1e6);
+      const tx = await pool.borrowUSDT0(1 * 1e6);
       await tx.wait();
       setStatus("✅ Borrow successful");
       await refresh();
@@ -92,6 +92,22 @@ function App() {
   useEffect(() => {
     refresh();
   }, [pool]);
+
+  async function devDeposit() {
+    try {
+      setStatus("⏳ Depositing collateral...");
+      const tx = await pool.devDepositRBTC({
+        value: ethers.utils.parseEther("0.0001"),
+      });
+      await tx.wait();
+      setStatus("✅ Collateral deposited");
+      await refresh();
+    } catch (err) {
+      setStatus("❌ Deposit failed");
+      console.error(err);
+    }
+  }
+
 
   return (
     <div className="app">
@@ -131,8 +147,11 @@ function App() {
           </div>
 
           <div className="card actions">
+            <button className="secondary" onClick={devDeposit}>
+              Deposit 0.0001 RBTC (Dev)
+            </button>
             <button className="primary" onClick={borrow}>
-              Borrow 100 USDT0
+              Borrow 1 USDT0
             </button>
           </div>
 

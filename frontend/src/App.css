@@ -126,6 +126,17 @@
   opacity: 0.9;
 }
 
+.secondary {
+  background: transparent;
+  border: 2px solid var(--rsk-orange);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--rsk-orange);
+}
+
 .mono {
   font-family: monospace;
   font-size: 0.85rem;

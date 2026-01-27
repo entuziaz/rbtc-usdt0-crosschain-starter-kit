@@ -8,10 +8,11 @@ contract FixedPriceOracle is IPriceOracle {
     address public immutable asset;
 
     constructor(address _asset, uint256 _priceE18) {
-        require(_asset != address(0), "ASSET_0");
+        // allow address(0) to represent native RBTC
         priceE18 = _priceE18;
         asset = _asset;
     }
+
 
     function getPrice(address _asset)
         external
