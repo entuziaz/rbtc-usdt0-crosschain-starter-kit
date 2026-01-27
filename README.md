@@ -1,6 +1,8 @@
-# RBTC–USDT0 Cross-Chain Lending Protocol (Starter Kit)
+# RBTC–USDT0 Cross-Chain Lending Protocol (Starter Kit) - WIP 🚧
 
 > A minimal, production-oriented **starter-kit** for building cross-chain, over-collateralized lending primitives on **Rootstock**. It bridges the gap between simple lending math and the reality of cross-chain communication using **LayerZero** and **Umbrella Network** oracles. It is designed for education, experimentation, and as a foundation for real protocols **not** a full money market.
+
+<img width="797" height="678" alt="Screenshot 2026-01-27 at 20 48 37" src="https://github.com/user-attachments/assets/2b73176d-f2d9-4019-bc24-8aa4421b639d" />
 
 
 ### What it is
