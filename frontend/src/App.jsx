@@ -12,6 +12,16 @@ function App() {
   const [collateral, setCollateral] = useState("—");
   const [debt, setDebt] = useState("—");
   const [status, setStatus] = useState("");
+  const [maxBorrowUsd, setMaxBorrow] = useState("...");
+
+  const numericCollateral = Number(collateral);
+  const numericPrice = Number(price);
+
+  const maxBorrow =
+    Number.isFinite(numericCollateral) &&
+    Number.isFinite(numericPrice)
+      ? (numericCollateral * numericPrice * 0.7).toFixed(2)
+      : "—";
 
   async function connect() {
     if (!window.ethereum) {
@@ -79,7 +89,10 @@ function App() {
   async function borrow() {
     try {
       setStatus("⏳ Sending transaction...");
-      const tx = await pool.borrowUSDT0(1 * 1e6);
+      const tx = await pool.borrowUSDT0(
+        ethers.utils.parseUnits("1", 6)
+      );
+
       await tx.wait();
       setStatus("✅ Borrow successful");
       await refresh();
@@ -88,6 +101,51 @@ function App() {
       console.error(err);
     }
   }
+
+  async function repay() {
+    try {
+      setStatus("⏳ Repaying...");
+      const usdt = new ethers.Contract(
+        CONTRACTS.usdt0,
+        ["function approve(address,uint256) external returns (bool)"],
+        pool.signer
+      );
+
+      await (await usdt.approve(
+        CONTRACTS.lendingPool,
+        ethers.utils.parseUnits("1", 6)
+      )).wait();
+
+      const tx = await pool.repayUSDT0(
+        ethers.utils.parseUnits("1", 6)
+      );
+      await tx.wait();
+
+      setStatus("✅ Repay successful");
+      await refresh();
+    } catch (err) {
+      setStatus("❌ Repay failed");
+      console.error(err);
+    }
+  }
+
+  async function withdraw() {
+    try {
+      setStatus("⏳ Withdrawing...");
+      const tx = await pool.withdrawRBTC(
+        ethers.utils.parseEther("0.00005")
+      );
+      await tx.wait();
+
+      setStatus("✅ Withdraw successful");
+      await refresh();
+    } catch (err) {
+      setStatus("❌ Withdraw failed");
+      console.error(err);
+    }
+  }
+
+
 
   useEffect(() => {
     refresh();
@@ -146,12 +204,23 @@ function App() {
             </div>
           </div>
 
+          <div className="hint">
+            Max borrow: {maxBorrow} USDT0
+          </div>
+
+
           <div className="card actions">
             <button className="secondary" onClick={devDeposit}>
               Deposit 0.0001 RBTC (Dev)
             </button>
             <button className="primary" onClick={borrow}>
               Borrow 1 USDT0
+            </button>
+            <button className="secondary" onClick={repay}>
+              Repay 1 USDT0
+            </button>
+            <button className="secondary" onClick={withdraw}>
+              Withdraw 0.00005 RBTC
             </button>
           </div>
 

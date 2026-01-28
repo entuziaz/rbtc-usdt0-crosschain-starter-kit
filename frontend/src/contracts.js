@@ -7,13 +7,13 @@ import OracleRouterArtifact from "../../artifacts/contracts/oracles/OracleRouter
 export const CONTRACTS = {
   oracleRouter: import.meta.env.VITE_ORACLE_ROUTER,
   lendingPool: import.meta.env.VITE_LENDING_POOL,
+  usdt0: import.meta.env.VITE_USDT0,
 };
 
 
 export const ABIS = {
   lendingPool: LendingPoolArtifact.abi,
   oracleRouter: OracleRouterArtifact.abi,
-  usdt0: import.meta.env.VITE_USDT0,
 };
 
 export const ROOTSTOCK_TESTNET = {
