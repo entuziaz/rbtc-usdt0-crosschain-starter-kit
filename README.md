@@ -12,7 +12,9 @@ This repository implements a **cross-chain RBTC collateral and USDT0 borrowing f
 * **RBTC** as collateral
 * **USDT0** as a protocol-defined USD stable unit
 * **LayerZero** for cross-chain messaging
-* **Umbrella Network** (or RedStone-compatible adapters) for price feeds
+* **Modular OracleRouter** for price feeds supporting:
+  * FixedPriceOracle (testnet & demos)
+  * Umbrella Network (mainnet)
 
 ### What It Is NOT
 
@@ -51,7 +53,7 @@ This repository implements a simple over-collateralized lending protocol on Root
   * A trusted LayerZero receiver contract credits collateral on Rootstock
 
 * **Pricing**:
-  * RBTC price sourced from **Umbrella Oracle** (via an on-chain adapter)
+  * RBTC price sourced from a **FixedPriceOracle (testnet)** or **Umbrella Oracle (mainnet via an on-chain adapter)**
   * USDT0 treated as **$1 by protocol invariant** (no oracle required)
 
 * **Risk model**: Fixed Loan-to-Value (LTV)
@@ -193,7 +195,9 @@ Adapters do **not** fetch data off-chain. They read **already-published on-chain
 
 - **`UmbrellaOracleAdapter`:** Reads the RBTC/USD prices from Umbrella Network. It does staleness checks (`MAX_DELAY`), decimal normalization and asset binding (so it cannot be reused for other assets).
 
-- **`FixedPriceOracle`:** Returns a constant price and is used for stable accounting units or testing. 
+- **`FixedPriceOracle`:** Returns a constant RBTC/USD price.  
+  Used as the **default oracle on testnet** to guarantee deterministic pricing, stable demos, and end-to-end UX without relying on external feeds.
+
 
 - **`LZSender` & `LZReceiver`:** 
   * *LZSender*: Source-chain contract. Accepts RBTC and emits LayerZero messages.
@@ -257,9 +261,11 @@ This repository includes a **minimal React + Vite frontend UI** that demonstrate
 
 The UI allows: 
 - Wallet connection via MetaMask
-- Reading RBTC price from Umbrella oracle
-- Viewing user collateral and debt
+- Reading RBTC price from the OracleRouter (testnet)
+- Viewing live on-chain collateral and debt
+- Depositing RBTC collateral (dev mode)
 - Borrowing USDT0 against RBTC collateral
+- Graceful handling of oracle reverts and insufficient collateral
 
 The frontend is intentionally lightweight and educational. Its purpose is to prove end-to-end usability of the protocol rather than provide a production UI.
 
@@ -339,16 +345,26 @@ PRIVATE_KEY=0xYOUR_TESTNET_PRIVATE_KEY
 ROOTSTOCK_RPC_URL=https://public-node.testnet.rsk.co
 
 # USDT0-compatible test token address (available on Rootstock Explorer)
-USDT0_ADDRESS=0x05f25f62687478985c230e8db077754fb41f4970
+USDT0_ADDRESS=0x...
 
 # Umbrella Network RBTC/USD reader (Rootstock Testnet)
-UMBRELLA_RBTC_READER=0x92010e763d476a732021191562134c488ca92a1f
+UMBRELLA_RBTC_READER=0x...
 
 # LayerZero Endpoint address for Rootstock Testnet
-LZ_ENDPOINT=0x5659e38a754c96d20fa4f08acd9a6cb5982149c6
+LZ_ENDPOINT=0x...
+
+# Lending Pool address
+LENDING_POOL_ADDRESS=0x...
 
 # Loan-to-Value ratio (basis points)
 LTV_BPS=7000
+
+# Use FixedPriceOracle instead of Umbrella (recommended on testnet)
+USE_FIXED_ORACLE=true
+
+# Deploy and seed MockUSDT0 locally or on testnet
+USE_MOCK_USDT0=true
+
 
 ```
 
@@ -373,15 +389,20 @@ The above command runs the `deploy.js` script that is inside the `scripts` direc
 ```bash
 Deploying with: 0x...
 
-OracleRouter:        0x51a17751e25E557Adfd6909c107ca8BdFF8733a5
-RBTC Oracle Adapter: 0x01A239C498Eb8E96aab3049c0Cd3D7eC1d818617
+OracleRouter: 0x...
+Fixed Oracle: 0x...
 RBTC oracle registered
 
-LZReceiver:          0x0f24a994f148fbE79132BC29698eC15ddaBF4DCD
-LendingPool:         0xDb78D92d465F14533eE9eDBe7460180Fd501dbf4
+Mock USDT0: 0x...
+Minted 1,000,000 USDT0 to deployer
+
+LZReceiver: 0x...
+LendingPool: 0x...
 Receiver linked to LendingPool
 
+Seeded pool with 500,000 USDT0
 Deployment complete ✅
+
 ```
 
 > Note: Contract addresses will differ per deployment and network.
@@ -430,8 +451,7 @@ As a result:
 
 The protocol and UI are designed to handle oracle unavailability gracefully. For live price data, you have to deploy the same contracts to Rootstock mainnet.
 
-To enable full end-to-end testing on testnet, this starter kit supports
-two oracle modes:
+To enable full end-to-end testing on Rootstock testnet, this starter kit supports two oracle modes selected at deploy time:
 
 ### Testnet Mode (Default)
 - Uses a `FixedPriceOracle` returning a constant RBTC/USD price
@@ -449,6 +469,19 @@ environment variable:
 ```bash
 USE_FIXED_ORACLE=true
 ```
+
+## Testnet UX Note
+
+Rootstock testnet faucet limits RBTC to ~0.001 per day.  
+For this reason:
+
+- The UI includes a `devDepositRBTC()` path for direct collateral testing  
+- The FixedPriceOracle is enabled by default  
+- Borrow amounts should remain small (1–100 USDT0)
+
+These design choices ensure reviewers can complete the full lending flow without external dependencies or liquidity bottlenecks.
+
+
 
 
 ### Oracle Configuration
