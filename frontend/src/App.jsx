@@ -3,6 +3,22 @@ import { ethers } from "ethers";
 import { CONTRACTS, ABIS, ROOTSTOCK_TESTNET } from "./contracts";
 import "./app.css";
 
+const numericDebt = Number(debt);
+
+const canBorrow =
+  Number.isFinite(numericCollateral) &&
+  Number.isFinite(numericPrice) &&
+  numericCollateral > 0 &&
+  numericPrice > 0 &&
+  Number(maxBorrow) >= 1; // since you borrow 1 USDT0
+
+const canRepay = numericDebt > 0;
+
+const canWithdraw =
+  numericDebt === 0 || // allow full withdraw only when debt is zero
+  true; // later you can add partial-withdraw solvency simulation
+
+
 function App() {
   const [account, setAccount] = useState(null);
   const [pool, setPool] = useState(null);
@@ -210,18 +226,37 @@ function App() {
 
 
           <div className="card actions">
-            <button className="secondary" onClick={devDeposit}>
-              Deposit 0.0001 RBTC (Dev)
+            <button
+              className="secondary"
+              onClick={devDeposit}
+            >
+              Deposit 0.0001 RBTC
             </button>
-            <button className="primary" onClick={borrow}>
+
+            <button
+              className="primary"
+              onClick={borrow}
+              disabled={!canBorrow}
+            >
               Borrow 1 USDT0
             </button>
-            <button className="secondary" onClick={repay}>
+
+            <button
+              className="secondary"
+              onClick={repay}
+              disabled={!canRepay}
+            >
               Repay 1 USDT0
             </button>
-            <button className="secondary" onClick={withdraw}>
+
+            <button
+              className="secondary"
+              onClick={withdraw}
+              disabled={!canWithdraw}
+            >
               Withdraw 0.00005 RBTC
             </button>
+
           </div>
 
           {status && <div className="status">{status}</div>}

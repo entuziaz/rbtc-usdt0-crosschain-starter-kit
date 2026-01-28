@@ -107,8 +107,16 @@
   font-size: 0.85rem;
 }
 
+.grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .actions {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   justify-content: center;
 }
 
@@ -150,4 +158,39 @@
   border-radius: 8px;
   background: #f3f4f6;
   font-weight: 600;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .app {
+    padding: 1rem;
+    margin: 1.5rem auto;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+.hint {
+  margin: 0.75rem 0 1.25rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }
