@@ -2,7 +2,7 @@
 
 > A minimal, production-oriented **starter-kit** for building cross-chain, over-collateralized lending primitives on **Rootstock**. It bridges the gap between simple lending math and the reality of cross-chain communication using **LayerZero** and **Umbrella Network** oracles. It is designed for education, experimentation, and as a foundation for real protocols **not** a full money market.
 
-<img width="1103" height="701" alt="cross-chain" src="https://github.com/user-attachments/assets/3a9420d0-5b72-4b88-b72d-f5931d368270" />
+<img width="1103" height="701" alt="cross-chain" src="https://github.com/user-attachments/assets/6a683a38-cdb3-4f91-992e-b9e5ed1993c6" />
 
 ### What it is
 
