@@ -218,6 +218,28 @@ pool.borrowUSDT0(500 * 1e6);
 
 ```
 
+### Repayment Logic
+
+Users can repay outstanding USDT0 debt at any time by approving the pool
+and calling `repayUSDT0`:
+
+```solidity
+// Approve USDT0 to the pool first
+usdt0.approve(address(pool), 100 * 1e6);
+
+// Repay 100 USDT0
+pool.repayUSDT0(100 * 1e6);
+```
+
+### Collateral Withdrawal
+
+Users may withdraw RBTC collateral as long as their position remains solvent after withdrawal:
+
+```solidity
+// Withdraw 0.01 RBTC
+pool.withdrawRBTC(0.01 ether);
+```
+
 ### Pricing Model
 
 | Asset | Price Source | Reason |
@@ -259,12 +281,14 @@ receiver.setLendingPool(lendingPool);
 
 This repository includes a **minimal React + Vite frontend UI** that demonstrates direct interaction with the deployed smart contracts on the **Rootstock Testnet**. 
 
-The UI allows: 
+The UI allows:
 - Wallet connection via MetaMask
 - Reading RBTC price from the OracleRouter (testnet)
 - Viewing live on-chain collateral and debt
 - Depositing RBTC collateral (dev mode)
 - Borrowing USDT0 against RBTC collateral
+- Repaying USDT0 debt
+- Withdrawing RBTC collateral (subject to LTV solvency)
 - Graceful handling of oracle reverts and insufficient collateral
 
 The frontend is intentionally lightweight and educational. Its purpose is to prove end-to-end usability of the protocol rather than provide a production UI.
@@ -546,6 +570,9 @@ npx hardhat test test/crosschain/CrossChainBorrow.test.js
 4. `LZReceiver.lzReceive()` validates message.
 5. RBTC is deposited into `LendingPool`.
 6. User borrows USDT0 against collateral.
+7. User may repay USDT0 to reduce debt.
+8. User may withdraw RBTC collateral if the position remains solvent.
+
 
 ### Roadmap & Extensions
 
