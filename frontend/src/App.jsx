@@ -190,6 +190,13 @@ function App() {
         <span className="badge">Rootstock Testnet</span>
       </header>
 
+      {status && (
+        <div className={`status ${status.startsWith("❌") ? "error" : "success"}`}>
+          {status}
+        </div>
+      )}
+
+
       {!account ? (
         <button className="primary" onClick={connect}>
           Connect Wallet
