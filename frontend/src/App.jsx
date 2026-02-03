@@ -3,21 +3,6 @@ import { ethers } from "ethers";
 import { CONTRACTS, ABIS, ROOTSTOCK_TESTNET } from "./contracts";
 import "./app.css";
 
-const numericDebt = Number(debt);
-
-const canBorrow =
-  Number.isFinite(numericCollateral) &&
-  Number.isFinite(numericPrice) &&
-  numericCollateral > 0 &&
-  numericPrice > 0 &&
-  Number(maxBorrow) >= 1; // since you borrow 1 USDT0
-
-const canRepay = numericDebt > 0;
-
-const canWithdraw =
-  numericDebt === 0 || // allow full withdraw only when debt is zero
-  true; // later you can add partial-withdraw solvency simulation
-
 
 function App() {
   const [account, setAccount] = useState(null);
@@ -39,6 +24,22 @@ function App() {
       ? (numericCollateral * numericPrice * 0.7).toFixed(2)
       : "—";
 
+  const numericDebt = Number(debt);
+
+  const canBorrow =
+    Number.isFinite(numericCollateral) &&
+    Number.isFinite(numericPrice) &&
+    numericCollateral > 0 &&
+    numericPrice > 0 &&
+    Number(maxBorrow) >= 1; // since you borrow 1 USDT0
+
+  const canRepay = numericDebt > 0;
+
+  const canWithdraw =
+    numericDebt === 0 || // allow full withdraw only when debt is zero
+    true; // later you can add partial-withdraw solvency simulation
+
+
   async function connect() {
     if (!window.ethereum) {
       alert("Install MetaMask");
@@ -58,7 +59,7 @@ function App() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const network = await provider.getNetwork();
 
-    // Enforceing Rootstock Testnet
+    // Enforcing Rootstock Testnet
     if (network.chainId !== 31) {
       try {
         await window.ethereum.request({
@@ -265,8 +266,6 @@ function App() {
             </button>
 
           </div>
-
-          {status && <div className="status">{status}</div>}
         </>
       )}
     </div>

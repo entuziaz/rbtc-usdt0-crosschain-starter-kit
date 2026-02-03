@@ -439,6 +439,7 @@ Deployment complete ✅
 ```text
 VITE_ORACLE_ROUTER="Your Deployed Oracle Router Address"
 VITE_LENDING_POOL="Your Deployed Lending Pool Address"
+VITE_USDT0="Your Deployed Mock USDT0 Address"
 ```
 
 2. Install frontend dependencies and run the frontend server:
