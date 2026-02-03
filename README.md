@@ -2,12 +2,7 @@
 
 > A minimal, production-oriented **starter-kit** for building cross-chain, over-collateralized lending primitives on **Rootstock**. It bridges the gap between simple lending math and the reality of cross-chain communication using **LayerZero** and **Umbrella Network** oracles. It is designed for education, experimentation, and as a foundation for real protocols **not** a full money market.
 
-<<<<<<< HEAD
-<img width="797" height="678" alt="Screenshot 2026-01-27 at 20 48 37" src="https://github.com/user-attachments/assets/2b73176d-f2d9-4019-bc24-8aa4421b639d" />
-
-=======
-<img width="1103" height="701" alt="cross-chain" src="https://github.com/user-attachments/assets/6a683a38-cdb3-4f91-992e-b9e5ed1993c6" />
->>>>>>> 6cd965c (Replace image in README with new cross-chain screenshot)
+<img width="1229" height="705" alt="Screenshot of the demo dApp" src="https://github.com/user-attachments/assets/6a27ce27-d680-437a-82c2-1b8538e16569" />
 
 ### What it is
 
