@@ -212,7 +212,7 @@ Borrowing is a two-step process. Once collateral is credited via the cross-chain
 
 ```solidity
 // Called on Rootstock
-// Borrow 500 USDT (assumes 6 decimal scale)
+// Borrow 500 USDT0 (assumes 6 decimal scale)
 pool.borrowUSDT0(500 * 1e6); 
 
 ```
@@ -261,7 +261,7 @@ Where:
 
 This check ensures that users can only borrow up to a fixed percentage of the value of their deposited collateral. For example, with a 70% LTV (7000 BPS), $650 of RBTC collateral allows up to  $455 of USDT0 debt.
 
-The solvency logic is implemented in the `LendingPool`s internal function `_isSolvent` which is called during borrow and withdrawal operations to prevent unsafe positions:
+The solvency logic is implemented in the `LendingPool`'s internal function `_isSolvent`, which is called during borrow and withdrawal operations to prevent unsafe positions:
 
 ```solidity
 function _isSolvent(uint256 collateralWei, uint256 debtAmount)
@@ -407,7 +407,7 @@ Use the following command to deploy the contracts from the root of the project:
 ```bash
 npx hardhat run scripts/deploy.js --network rootstock_testnet
 ```
-The above command runs the `deploy.js` script that is inside the `scripts` directory of the project When deployment succeeds, you should see an output similar to the following:
+The above command runs the `deploy.js` script that is inside the `scripts` directory of the project. When deployment succeeds, you should see an output similar to the following:
 
 ```bash
 Deploying with: 0x...
@@ -434,7 +434,7 @@ Deployment complete ✅
 
 ### 3. Run the Frontend UI
 
-1. Create a `.env` file in the root of the `frontend` directory. Add the following addresses inside  `frontend/.env` file. You can get them from the deployed addresses from the terminal output of the contracts deployment.
+1. Create a `.env` file in the root of the `frontend` directory. Add the following addresses to the `frontend/.env` file. You can obtain them from the terminal output of the deployment script.
 
 ```text
 VITE_ORACLE_ROUTER="Your Deployed Oracle Router Address"
@@ -450,7 +450,7 @@ npm install
 npm run dev
 ```
 
-3. Open browser
+3. Open your browser
 
 4. Connect MetaMask
 
