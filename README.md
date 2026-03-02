@@ -1,4 +1,4 @@
-# RBTC–USDT0 Cross-Chain Lending Protocol (Starter Kit) - WIP 🚧
+# RBTC–USDT0 Cross-Chain Lending Protocol (Starter Kit) - WIP
 
 > A minimal, production-oriented starter-kit for building cross-chain, over-collateralized lending primitives on Rootstock. It bridges the gap between simple lending math and the reality of cross-chain communication using LayerZero and Umbrella Network oracles. It is designed for education, experimentation, and as a foundation for real protocols not a full money market.
 
@@ -211,21 +211,7 @@ npx hardhat test test/crosschain/CrossChainBorrow.test.js
 * ❌ Custody of significant funds
 * ❌ Production money markets without heavy extensions
 
-### Security Notes
-
-* **This code is not audited.**
-
-### Example Flow (End-to-End)
-
-1. User sends RBTC on source chain.
-2. `LZSender.sendRBTC()` emits LayerZero message.
-3. LayerZero delivers message + value.
-4. `LZReceiver.lzReceive()` validates message.
-5. RBTC is deposited into `LendingPool`.
-6. User borrows USDT0 against collateral.
-7. User may repay USDT0 to reduce debt.
-8. User may withdraw RBTC collateral if the position remains solvent.
-
+### Security Note: **This code is not audited.**
 
 ***Built for the Rootstock Ecosystem.*** ⭐️⭐️⭐️
 
