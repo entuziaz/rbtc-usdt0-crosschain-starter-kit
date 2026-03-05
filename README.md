@@ -88,7 +88,7 @@ Create an environment variables file called `.env` in the root of the project an
 PRIVATE_KEY=0xYOUR_TESTNET_PRIVATE_KEY
 
 # Rootstock Testnet RPC URL
-ROOTSTOCK_RPC_URL=https://public-node.testnet.rsk.co
+ROOTSTOCK_RPC_URL=https://rpc.testnet.rootstock.io/<RPC_API_KEY>
 
 # USDT0-compatible test token address (available on Rootstock Explorer)
 USDT0_ADDRESS=0x...
@@ -112,8 +112,9 @@ USE_FIXED_ORACLE=true
 USE_MOCK_USDT0=true
 
 ```
+> NOTE: You can get your Rootstock RPC API URL by following the official guide on [Getting Started with the Rootstock RPC API](https://dev.rootstock.io/developers/rpc-api/rootstock/setup/).
 
-Then, run the `compile` command in the terminal:
+Next, run the `compile` command in the terminal to compile the smart contracts:
 
 ```
 npx hardhat compile
